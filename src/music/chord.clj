@@ -1,9 +1,7 @@
 (ns music.chord
 (:require [clojure.math.combinatorics :as comb])
 )
-
 (def C [:C :D :E :F :G :A :B])
-
 (def invert
     (fn [scale degree]
         (loop [s scale count degree]
@@ -34,9 +32,11 @@
 
 (defn intervals
     ([scale interval] 
-    (let [interval_to_invert (dec interval)] 
-    (lazy-seq (cons (first scale) (intervals (invert scale interval_to_invert) interval)
-    )))))
+    (if (<= interval 0)
+        nil
+        (let [interval_to_invert (dec interval)] 
+            (lazy-seq (cons (first scale) (intervals (invert scale interval_to_invert) interval)
+    ))))))
 
 (defn chord_scale [voices interval scale]
     (map 
