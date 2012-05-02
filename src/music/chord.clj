@@ -1,4 +1,7 @@
-(ns music.chord)
+(ns music.chord
+(:require [clojure.math.combinatorics :as comb])
+)
+
 (def C [:C :D :E :F :G :A :B])
 
 (def invert
@@ -27,12 +30,18 @@
 
 ; use partial function application to define a triad
 (def triad (partial chord 3))
+(def seventh_chord (partial chord 4))
 
 (defn intervals
     ([scale interval] 
     (let [interval_to_invert (dec interval)] 
     (lazy-seq (cons (first scale) (intervals (invert scale interval_to_invert) interval)
     )))))
+
+(defn chord_scale [voices interval scale]
+    (map 
+        #(chord voices scale %) 
+        (take (count scale) (intervals scale interval))))
 
 (comment
 ; some examples of usage of the above
