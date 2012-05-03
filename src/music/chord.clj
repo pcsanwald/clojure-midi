@@ -43,6 +43,17 @@
         #(chord voices scale %) 
         (take (count scale) (intervals scale interval))))
 
+(defn scale-stepper
+    [scale recipe]
+    (lazy-seq 
+        (cons 
+            (first scale) 
+            (scale-stepper (take 
+                (count scale) 
+                (cycle (invert scale (first recipe)))) (invert recipe 1))
+    )))
+
+
 (comment
 ; some examples of usage of the above
 (map #(c/triad c/C %)(take 7 (c/intervals c/C 3)))

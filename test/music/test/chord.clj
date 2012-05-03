@@ -24,3 +24,9 @@
     (is (= [:C :C :C] (take 3 (intervals C 1))))
     (is (empty? (take 3 (intervals C 0))))
 )
+
+(deftest test-scale-stepper
+    (is (= [:C :C :D :E :E :F :G :G :A :B :B :C] 
+        (take 12 (scale-stepper C [0 1 1]))
+        ))
+    )
