@@ -2,15 +2,28 @@
 (:require [clojure.math.combinatorics :as comb])
 )
 (def C [:C :D :E :F :G :A :B])
-(def invert
-    (fn [scale degree]
+
+(defn invert
+"return a scale inverted by a degree number.
+could be refactored to return a lazy sequence?
+also degree could be an element in the collection.
+"
+    [scale degree]
         (loop [s scale count degree]
         (if (zero? count)
             s
             ; note that we have to convert (rest s) back to a vec,
             ; conj will not do what we want with a seq
             (recur (conj (vec (rest s)) (first s)) (dec count))
-))))
+)))
+
+(defn rootify
+    [scale note]
+    (loop [new-scale scale]
+    (if (= (first new-scale) note)
+        new-scale 
+        (recur (conj (vec (rest new-scale)) (first new-scale)))
+        )))
 
 (defn chord 
     ([num_voices scale degree] 
@@ -44,7 +57,7 @@
         (take (count scale) (intervals scale interval))))
 
 (defn scale-stepper
-    [scale recipe]
+    ([scale recipe]
     (lazy-seq 
         (cons 
             (first scale) 
@@ -52,9 +65,21 @@
                 (count scale) 
                 (cycle (invert scale (first recipe)))) (invert recipe 1))
     )))
+    ([scale chord recipe]
+    (lazy-seq
+        (cons
+            (first scale) 
+            (scale-stepper (take 
+                (count scale) 
+                (cycle (invert scale (first recipe)))) (invert recipe 1))
+    ))))
 
 
 (comment
-; some examples of usage of the above
-(map #(c/triad c/C %)(take 7 (c/intervals c/C 3)))
+;  
+(map vector
+    (take 7 (scale-stepper C [1 1 2]))
+    (take 7 (scale-stepper (rootify C :E) [1 2 1]))
+    (take 7 (scale-stepper (rootify C :G) [2 1 1]))
+)
 )

@@ -27,6 +27,8 @@
 
 (deftest test-scale-stepper
     (is (= [:C :C :D :E :E :F :G :G :A :B :B :C] 
-        (take 12 (scale-stepper C [0 1 1]))
-        ))
-    )
+        (take 12 (scale-stepper C [0 1 1])))
+    ))
+
+(deftest test-rootify
+    (is (= [:E :F :G :A :B :C :D] (rootify C :E))))
