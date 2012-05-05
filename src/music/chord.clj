@@ -3,6 +3,16 @@
 )
 (def C [:C :D :E :F :G :A :B])
 
+(defn step
+    ([coll]
+    (conj (vec (rest coll)) (first coll)))
+    ([coll steps]
+        (loop [current-coll coll times steps]
+            (if (zero? times)
+                current-coll
+                (recur (step current-coll) (dec times))))))
+
+
 (defn invert
 "return a scale inverted by a degree number.
 could be refactored to return a lazy sequence?
@@ -14,7 +24,7 @@ also degree could be an element in the collection.
             s
             ; note that we have to convert (rest s) back to a vec,
             ; conj will not do what we want with a seq
-            (recur (conj (vec (rest s)) (first s)) (dec count))
+            (recur (step s) (dec count))
 )))
 
 (defn rootify
@@ -22,8 +32,8 @@ also degree could be an element in the collection.
     (loop [new-scale scale]
     (if (= (first new-scale) note)
         new-scale 
-        (recur (conj (vec (rest new-scale)) (first new-scale)))
-        )))
+        (recur (step new-scale)))
+        ))
 
 (defn chord 
     ([num_voices scale degree] 
@@ -75,11 +85,16 @@ also degree could be an element in the collection.
     ))))
 
 
-(comment
-;  
-(map vector
-    (take 7 (scale-stepper C [1 1 2]))
-    (take 7 (scale-stepper (rootify C :E) [1 2 1]))
-    (take 7 (scale-stepper (rootify C :G) [2 1 1]))
-)
-)
+(defn make-scale
+    [recipe voicing scale degree]
+    (take (count scale) 
+    (scale-stepper (invert scale (nth voicing degree)) (step recipe degree))))
+
+(defn inverter
+    [recipe spelling scale]
+    (let
+    [voicing (map dec spelling)
+    counts (range (count voicing))]
+    (apply map vector
+        (map (partial make-scale recipe voicing scale) counts))))
+
