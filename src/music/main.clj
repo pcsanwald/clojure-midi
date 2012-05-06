@@ -1,5 +1,5 @@
 (ns music.main
-(:use music.midi music.chord))
+(:use music.midi music.chord music.inverter))
 
 (defn -main []
     (let [progression (map #(music.chord/triad music.chord/C %)(take 7 (music.chord/intervals music.chord/C 3)))]
