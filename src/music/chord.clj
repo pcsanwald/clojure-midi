@@ -8,7 +8,7 @@
 (defn chord 
     ([num_voices scale degree] 
         (let [degree (if (keyword? degree) (.indexOf scale degree) degree)] 
-            (take num_voices (take-nth 2 (cycle (inverter/invert scale degree))))
+            (take num_voices (take-nth 2 (cycle (inverter/transposer scale degree))))
         )
     ) 
     ([scale degree] 
@@ -24,7 +24,7 @@
     (if (<= interval 0)
         nil
         (let [interval_to_invert (dec interval)] 
-            (lazy-seq (cons (first scale) (intervals (inverter/invert scale interval_to_invert) interval)
+            (lazy-seq (cons (first scale) (intervals (inverter/transposer scale interval_to_invert) interval)
     ))))))
 
 (defn chord_scale [voices interval scale]

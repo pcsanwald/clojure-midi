@@ -9,27 +9,21 @@
                 current-coll
                 (recur (step current-coll) (dec times))))))
 
-(defn invert
-"return a scale inverted by a degree number.
-could be refactored to return a lazy sequence?
-also degree could be an element in the collection.
-"
-    [scale degree]
-        (loop [s scale count degree]
-        (if (zero? count)
-            s
-            ; note that we have to convert (rest s) back to a vec,
-            ; conj will not do what we want with a seq
-            (recur (step s) (dec count))
-)))
+(defmulti transposer (fn [_ thing] (class thing)))
 
-(defn rootify
+(defmethod transposer Long 
+    [scale degree]
+    (loop [new-scale scale count degree]
+    (if (zero? count)
+        new-scale 
+        (recur (step new-scale) (dec count)))))
+
+(defmethod transposer clojure.lang.Keyword 
     [scale note]
     (loop [new-scale scale]
     (if (= (first new-scale) note)
         new-scale 
-        (recur (step new-scale)))
-        ))
+        (recur (step new-scale)))))
 
 (defn scale-stepper
     ([scale recipe]
@@ -38,7 +32,7 @@ also degree could be an element in the collection.
             (first scale) 
             (scale-stepper (take 
                 (count scale) 
-                (cycle (invert scale (first recipe)))) (invert recipe 1))
+                (cycle (transposer scale (first recipe)))) (transposer recipe 1))
     )))
     ([scale chord recipe]
     (lazy-seq
@@ -46,13 +40,13 @@ also degree could be an element in the collection.
             (first scale) 
             (scale-stepper (take 
                 (count scale) 
-                (cycle (invert scale (first recipe)))) (invert recipe 1))
+                (cycle (transposer scale (first recipe)))) (transposer recipe 1))
     ))))
 
 (defn make-scale
     [recipe voicing scale degree]
     (take (count scale) 
-    (scale-stepper (invert scale (nth voicing degree)) (step recipe degree))))
+    (scale-stepper (transposer scale (nth voicing degree)) (step recipe degree))))
 
 (defn inverter
     [recipe spelling scale]
