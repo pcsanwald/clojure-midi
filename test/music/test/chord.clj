@@ -1,5 +1,6 @@
 (ns music.test.chord
   (:use [music.chord])
+  (:use [music.inverter])
   (:use [clojure.test]))
 
 (deftest test-triad
