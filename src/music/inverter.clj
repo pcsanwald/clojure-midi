@@ -14,17 +14,15 @@
 
 (defmulti transposer (fn [_ thing] (class thing)))
 
-(defmethod transposer Long 
-    "transpose a scale to a given degree, from 0 to (count scale)"
-    [scale degree]
+(defmethod transposer
+    Long [scale degree]
     (loop [new-scale scale count degree]
     (if (zero? count)
         new-scale 
         (recur (step new-scale) (dec count)))))
 
-(defmethod transposer clojure.lang.Keyword 
-    "transpose a scale by an item in the scale" 
-    [scale note]
+(defmethod transposer 
+    clojure.lang.Keyword [scale note]
     (loop [new-scale scale]
     (if (= (first new-scale) note)
         new-scale 
@@ -38,14 +36,6 @@
     ([scale recipe]
     (lazy-seq 
         (cons 
-            (first scale) 
-            (scale-stepper (take 
-                (count scale) 
-                (cycle (transposer scale (first recipe)))) (transposer recipe 1))
-    )))
-    ([scale chord recipe]
-    (lazy-seq
-        (cons
             (first scale) 
             (scale-stepper (take 
                 (count scale) 
