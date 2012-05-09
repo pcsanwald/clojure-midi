@@ -16,17 +16,17 @@
 
 (defmethod transposer
     Long [scale degree]
-    (loop [new-scale scale count degree]
-    (if (zero? count)
-        new-scale 
-        (recur (step new-scale) (dec count)))))
+    (cond
+        (zero? degree) scale
+        (< degree 0) (recur (step scale (dec (count scale))) (inc degree))
+        :else (recur (step scale) (dec degree))))
 
 (defmethod transposer 
     clojure.lang.Keyword [scale note]
     (loop [new-scale scale]
-    (if (= (first new-scale) note)
-        new-scale 
-        (recur (step new-scale)))))
+    (cond 
+        (= (first new-scale) note) new-scale 
+        :else (recur (step new-scale)))))
 
 (defn scale-stepper
     "step through a scale given an intervallic recipe.

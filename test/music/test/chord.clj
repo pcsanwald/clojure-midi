@@ -45,4 +45,5 @@
 
 (deftest test-transposer
     (is (= [:E :F :G :A :B :C :D] (transposer C :E)))
-    (is (= [:E :F :G :A :B :C :D] (transposer C 2))))
+    (is (= [:E :F :G :A :B :C :D] (transposer C 2)))
+    (is (= [:B :C :D :E :F :G :A] (transposer C -1))))
