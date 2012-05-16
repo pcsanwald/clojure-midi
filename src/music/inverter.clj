@@ -7,10 +7,10 @@
     ([coll]
     (conj (vec (rest coll)) (first coll)))
     ([coll steps]
-        (loop [current-coll coll times steps]
-            (if (zero? times)
-                current-coll
-                (recur (step current-coll) (dec times))))))
+            (cond 
+                (zero? steps) coll
+                (< steps 0) (recur (step coll (dec (count coll))) (inc steps)) 
+                :else (recur (step coll) (dec steps)))))
 
 (defmulti transposer (fn [_ thing] (class thing)))
 
@@ -34,13 +34,14 @@
     common tone, second, second would be expressed as [0 1 1].
     "
     ([scale recipe]
+    (let [recipe-step (if (neg? (first recipe)) -1 1)] 
     (lazy-seq 
         (cons 
             (first scale) 
             (scale-stepper (take 
                 (count scale) 
-                (cycle (transposer scale (first recipe)))) (transposer recipe 1))
-    ))))
+                (cycle (transposer scale (first recipe)))) (transposer recipe recipe-step))
+    )))))
 
 (defn make-scale
     "make a scale using a voicing, scale and degree.

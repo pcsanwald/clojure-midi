@@ -43,6 +43,12 @@
         '([:C :E :G] [:D :F :B] [:E :A :C] [:G :B :D] [:A :C :F] [:B :E :G] [:D :F :A])
         (inverter [1 1 2] [1 3 5] C))))
 
+(deftest test-inverter-descending
+    (is (= 
+        '([:C :E :G] [:A :D :F] [:G :B :E] [:F :A :C] [:D :G :B] [:C :E :A] [:B :D :F])
+        (inverter [-2 -1 -1] [1 3 5] C))))
+
+
 (deftest test-transposer
     (is (= [:E :F :G :A :B :C :D] (transposer C :E)))
     (is (= [:E :F :G :A :B :C :D] (transposer C 2)))
